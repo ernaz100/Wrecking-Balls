@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Boost
+  - Crate
+  - Blue Crate
+  - Red Crate
   layers:
   - Default
   - TransparentFX
