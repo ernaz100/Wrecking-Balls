@@ -4,20 +4,29 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private float crateWave_position = 11;
+    private float boosterWave_position = 11;
+    private float checkpoint_Position = -8;
+    private float environment_Position = 27.93f;
+
+    public static int ENVIRONMENT_INTERVAL = 30;
+    public static float CRATE_BOOST_CHECKPOINT_INTERVAL = 27.5f;
+
     public GameObject[] cratePrefabs;
     public GameObject[] boosterPrefabs;
     public GameObject checkpoint;
     public GameObject environment;
+
     private bool onStartUp = true;
+
     private int randomCratePrefab;
 
     void Start()
     {
-        SpawnBoostingPads(11);
-        SpawnCrateWave(11);
-        SpawnCheckpoints(-8);
-        SpawnEnvironment(27.93f);
+        SpawnBoostingPads();
+        SpawnCrateWave();
+        SpawnCheckpoint();
+        SpawnEnvironment();
     }
 
     // Update is called once per frame
@@ -26,23 +35,21 @@ public class SpawnManager : MonoBehaviour
         
     }
 
-    public void SpawnCrateWave(float pos)
+    public void SpawnCrateWave()
     {
         if (onStartUp)
         {
             for (int c = 0; c < 5; c++)
             {
-
-                float newPos = pos + (c * 27.5f);
-
                 for (int i = 0; i < 5; i++)
                 {
                     for (int j = 0; j < 9; j++)
                     {
                         randomCratePrefab = Random.Range(0, 2);
-                        Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, newPos + i), cratePrefabs[randomCratePrefab].transform.rotation);
+                        Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
                     }
                 }
+                crateWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
             }
         }
         else
@@ -52,25 +59,25 @@ public class SpawnManager : MonoBehaviour
                 for (int j = 0; j < 9; j++)
                 {
                     randomCratePrefab = Random.Range(0, 2);
-                    Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, pos + i), cratePrefabs[randomCratePrefab].transform.rotation);
+                    Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
                 }
             }
+            crateWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
         }
     }
 
-    public void SpawnBoostingPads(float pos)
+    public void SpawnBoostingPads()
     {
         if (onStartUp)
         {
             for (int c = 0; c < 5; c++)
             {
-                float newPos = pos + (c * 27.5f);
                 float randomAmount = Random.Range(1, 5);
                 for (int i = 0; i < randomAmount; i++)
                 {
-                    Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(newPos), boosterPrefabs[0].transform.rotation);
-
+                    Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
                 }
+                boosterWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
             }
         }
         else
@@ -78,32 +85,35 @@ public class SpawnManager : MonoBehaviour
             float randomAmount = Random.Range(1, 5);
             for (int i = 0; i < randomAmount; i++)
             {
-                Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(pos), boosterPrefabs[0].transform.rotation);
-
+                Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
             }
+            boosterWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+
         }
     }
-    public void SpawnCheckpoints(float pos)
+    public void SpawnCheckpoint()
     {
-        for (int i = 0; i < 3; i++)
-        {
-            Instantiate(checkpoint, new Vector3(0.0335958f, -0.485198f, pos + 27.5f * i), checkpoint.transform.rotation);
-        }
+            Instantiate(checkpoint, new Vector3(0.0335958f, -0.485198f, checkpoint_Position), checkpoint.transform.rotation);
+            checkpoint_Position += CRATE_BOOST_CHECKPOINT_INTERVAL;
     }
-    public void SpawnEnvironment(float pos)
+    public void SpawnEnvironment()
     {
         if (onStartUp)
         {
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, pos), environment.transform.rotation);
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, pos + 30), environment.transform.rotation);
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, pos + 60), environment.transform.rotation);
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, pos + 90), environment.transform.rotation);
-
+            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+            environment_Position += ENVIRONMENT_INTERVAL;
+            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+            environment_Position += ENVIRONMENT_INTERVAL;
+            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+            environment_Position += ENVIRONMENT_INTERVAL;
+            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+            environment_Position += ENVIRONMENT_INTERVAL;
             onStartUp = false;
         }
         else
         {
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, pos), environment.transform.rotation);
+            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+            environment_Position += ENVIRONMENT_INTERVAL;
         }
 
     }
