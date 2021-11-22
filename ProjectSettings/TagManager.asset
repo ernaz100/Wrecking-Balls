@@ -8,6 +8,8 @@ TagManager:
   - Crate
   - Blue Crate
   - Red Crate
+  - Checkpoint
+  - Env
   layers:
   - Default
   - TransparentFX
