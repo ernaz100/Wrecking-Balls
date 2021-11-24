@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    private float crateWave_position = 11;
+    private float crateWave_position = 44;
     private float boosterWave_position = 11;
     private float checkpoint_Position = -8;
-    private float environment_Position = 27.93f;
+    private float environment_Position = 139f;
 
-    public static int ENVIRONMENT_INTERVAL = 30;
-    public static float CRATE_BOOST_CHECKPOINT_INTERVAL = 27.5f;
-
+    public int ENVIRONMENT_INTERVAL = 120;
+    public const float BOOST_CHECKPOINT_CRATE_INTERVAL = 60f;
+    private const float CRATE_LEFT_BORDER = -6.5f;
     public GameObject[] cratePrefabs;
     public GameObject[] boosterPrefabs;
     public GameObject checkpoint;
@@ -23,10 +23,6 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
-        SpawnBoostingPads();
-        SpawnCrateWave();
-        SpawnCheckpoint();
-        SpawnEnvironment();
     }
 
     // Update is called once per frame
@@ -41,28 +37,28 @@ public class SpawnManager : MonoBehaviour
         {
             for (int c = 0; c < 5; c++)
             {
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i += 2)
                 {
-                    for (int j = 0; j < 9; j++)
+                    for (int j = 0; j < 18; j += 2)
                     {
                         randomCratePrefab = Random.Range(0, 2);
-                        Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
+                        Instantiate(cratePrefabs[randomCratePrefab], new Vector3(CRATE_LEFT_BORDER + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
                     }
                 }
-                crateWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+                crateWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
             }
         }
         else
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i +=2)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < 18; j += 2)
                 {
                     randomCratePrefab = Random.Range(0, 2);
-                    Instantiate(cratePrefabs[randomCratePrefab], new Vector3(-4 + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
+                    Instantiate(cratePrefabs[randomCratePrefab], new Vector3(CRATE_LEFT_BORDER + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
                 }
             }
-            crateWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+            crateWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
         }
     }
 
@@ -72,12 +68,12 @@ public class SpawnManager : MonoBehaviour
         {
             for (int c = 0; c < 5; c++)
             {
-                float randomAmount = Random.Range(1, 5);
+                float randomAmount = Random.Range(1, 10);
                 for (int i = 0; i < randomAmount; i++)
                 {
                     Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
                 }
-                boosterWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+                boosterWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
             }
         }
         else
@@ -87,14 +83,14 @@ public class SpawnManager : MonoBehaviour
             {
                 Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
             }
-            boosterWave_position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+            boosterWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
 
         }
     }
     public void SpawnCheckpoint()
     {
-            Instantiate(checkpoint, new Vector3(0.0335958f, -0.485198f, checkpoint_Position), checkpoint.transform.rotation);
-            checkpoint_Position += CRATE_BOOST_CHECKPOINT_INTERVAL;
+            Instantiate(checkpoint, new Vector3(1.25f, -0.485198f, checkpoint_Position), checkpoint.transform.rotation);
+            checkpoint_Position += BOOST_CHECKPOINT_CRATE_INTERVAL;
     }
     public void SpawnEnvironment()
     {
@@ -120,8 +116,8 @@ public class SpawnManager : MonoBehaviour
 
     private Vector3 GenerateRandomBoosterPosition(float pos)
     {
-        float randomX = Random.Range(-4f, 4f);
-        float randomZ = Random.Range(pos-16, pos-5);
+        float randomX = Random.Range(-7f, 10f);
+        float randomZ = Random.Range(pos-16, pos+14);
         return new Vector3(randomX, -0.485f, randomZ);
     }
 }

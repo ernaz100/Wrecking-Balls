@@ -14,7 +14,9 @@ public class PlayerController : MonoBehaviour
 
     private bool onCheckpoint = true;
     private bool isRed = false;
-
+    private bool gameOver = false;
+    private bool onStart = true;
+    private Coroutine gameOverCountDown;
     private Rigidbody playerRb;
     private GameManager gameManager;
     private SpawnManager spawnManager;
@@ -28,20 +30,32 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MoveSideways();
-
-        if (Input.GetKeyDown(KeyCode.Space) && onCheckpoint)
+        if (gameOver)
         {
-            playerRb.AddForce(Vector3.forward * forwardSpeed , ForceMode.Impulse); 
-            onCheckpoint = false;
+            gameManager.EndGame();
         }
+        else
+        {
 
+            MoveSideways();
+
+            if (Input.GetKeyDown(KeyCode.Space) && onCheckpoint)
+            {
+                playerRb.AddForce(Vector3.forward * forwardSpeed , ForceMode.Impulse); 
+                onCheckpoint = false;
+                gameOverCountDown = StartCoroutine(DetectGameOver());
+
+            }
+         }
     }
-    
+
     private void MoveSideways()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        playerRb.AddForce(Vector3.right * Time.deltaTime * sideSpeed * horizontalInput, ForceMode.Impulse);
+        if (GameManager.isRunning)
+        {
+            float horizontalInput = Input.GetAxis("Horizontal");
+            playerRb.AddForce(Vector3.right * Time.deltaTime * sideSpeed * horizontalInput, ForceMode.Impulse);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -57,8 +71,10 @@ public class PlayerController : MonoBehaviour
             onCheckpoint = true;
             playerRb.velocity = Vector3.zero;
             playerRb.angularVelocity = Vector3.zero;
-
-
+            if (!onStart)
+            {
+                StopCoroutine(gameOverCountDown);
+            }
 
         }
 
@@ -71,6 +87,7 @@ public class PlayerController : MonoBehaviour
             spawnManager.SpawnBoostingPads();
             spawnManager.SpawnEnvironment();
             spawnManager.SpawnCheckpoint();
+            onStart = false;
         }
     }
 
@@ -78,6 +95,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isRed && collision.gameObject.CompareTag("Red Crate"))
         {
+            playerRb.AddForce(Vector3.forward , ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
             Instantiate(redExplosion, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(20);
@@ -86,11 +104,18 @@ public class PlayerController : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Blue Crate"))
         {
+            playerRb.AddForce(Vector3.forward , ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
             Instantiate(blueExplosion, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(10);
 
         }
+    }
+
+    IEnumerator DetectGameOver()
+    {
+        yield return new WaitForSeconds(10);
+        gameOver = true;
     }
 
 

@@ -8,7 +8,10 @@ public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
     public TextMeshProUGUI scoreText;
+    public GameObject titleScreen;
+    public SpawnManager spawnManager;
     private int score;
+    public static bool isRunning = false;
 
     void Start()
     {
@@ -19,6 +22,23 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void StartGame()
+    {
+        score = 0;
+        scoreText.text = "Score: " + score;
+        isRunning = true;
+        titleScreen.SetActive(false);
+        spawnManager.SpawnBoostingPads();
+        spawnManager.SpawnCrateWave();
+        spawnManager.SpawnCheckpoint();
+        spawnManager.SpawnEnvironment();
+    }
+    public void EndGame()
+    {
+        isRunning = false;
+        titleScreen.SetActive(true);
     }
 
     public void UpdateScore(int addToScore)
