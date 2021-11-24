@@ -4,27 +4,30 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float forwardSpeed = 20f;
+    private const int SHRINKING_DELAY = 6;
+    private const int BLUE = 0, RED = 1, YELLOW = 2;
+    public float forwardSpeed = 50f;
     public float sideSpeed = 20f;
     public float boostingSpeed = 50f;
 
-    public Material strongerMaterial;
-    public ParticleSystem blueExplosion;
-    public ParticleSystem redExplosion;
+    public Material[] playerMaterial;
+    public ParticleSystem[] explosions;
 
     private bool onCheckpoint = true;
     private bool isRed = false;
-    private bool gameOver = false;
-    private bool onStart = true;
-    private Coroutine gameOverCountDown;
+    private bool isYellow = false;
+
+    IEnumerator changeColor;
     private Rigidbody playerRb;
     private GameManager gameManager;
     private SpawnManager spawnManager;
+
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        changeColor = ChangeColor();
     }
 
     // Update is called once per frame
@@ -32,12 +35,26 @@ public class PlayerController : MonoBehaviour
     {
             MoveSideways();
 
-            if (Input.GetKeyDown(KeyCode.Space) && onCheckpoint && !gameOver)
+            if (onCheckpoint && GameManager.isRunning)
             {
-                playerRb.AddForce(Vector3.forward * forwardSpeed , ForceMode.Impulse); 
-                onCheckpoint = false;
-                gameOverCountDown = StartCoroutine(DetectGameOver());
-
+                transform.Translate(new Vector3(0,0,1) * Time.deltaTime,Space.World);
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    StopCoroutine(changeColor);
+                    playerRb.AddForce(Vector3.forward * 50, ForceMode.Impulse);
+                }
+            }
+            else if(!onCheckpoint && GameManager.isRunning)
+            {
+                playerRb.AddForce(Vector3.forward * forwardSpeed * Time.deltaTime, ForceMode.Impulse);
+                transform.localScale -= new Vector3(1,1,1) * Time.deltaTime / SHRINKING_DELAY;
+                transform.position = new Vector3(transform.position.x,((transform.localScale.x / 2)) , transform.position.z);
+                if(transform.localScale.x < 0 )
+                {
+                    playerRb.velocity = Vector3.zero;
+                    playerRb.angularVelocity = Vector3.zero;
+                    gameManager.EndGame();
+                }
             }
          
     }
@@ -49,69 +66,94 @@ public class PlayerController : MonoBehaviour
             float horizontalInput = Input.GetAxis("Horizontal");
             playerRb.AddForce(Vector3.right * Time.deltaTime * sideSpeed * horizontalInput, ForceMode.Impulse);
         }
-    }
 
+    }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Boost"))
-        {
-            isRed = true;
-            playerRb.AddForce(Vector3.forward * boostingSpeed, ForceMode.Impulse);
-            GetComponent<Renderer>().material = strongerMaterial;
-        }
-        else if (other.CompareTag("Checkpoint"))
+        if (other.CompareTag("Checkpoint"))
         {
             onCheckpoint = true;
+            StartCoroutine(changeColor);
+            transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+            transform.localScale = new Vector3(1, 1, 1);
             playerRb.velocity = Vector3.zero;
             playerRb.angularVelocity = Vector3.zero;
-            if (!onStart)
-            {
-                StopCoroutine(gameOverCountDown);
-            }
 
         }
+        if (other.CompareTag("Boost"))
+        {
+            playerRb.AddForce(Vector3.forward * boostingSpeed, ForceMode.Impulse);
+            GetComponent<Renderer>().material = playerMaterial[RED];
+        }
+        else if(other.CompareTag("Yellow Boost"))
+        {
+            playerRb.AddForce(Vector3.forward * boostingSpeed, ForceMode.Impulse);
+            GetComponent<Renderer>().material = playerMaterial[YELLOW];
+        }
+        
 
     }   
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Checkpoint"))
         {
-            spawnManager.SpawnCrateWave();
-            spawnManager.SpawnBoostingPads();
+            StopCoroutine(changeColor);
+            spawnManager.SpawnCrateLine();
+            spawnManager.SpawnBoostingPadsAndRandomCrates();
             spawnManager.SpawnEnvironment();
             spawnManager.SpawnCheckpoint();
-            onStart = false;
+            onCheckpoint = false;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("Blue Crate"))
+        {
+            playerRb.AddForce(Vector3.forward, ForceMode.Impulse);
+            Destroy(collision.gameObject.gameObject);
+            Instantiate(explosions[BLUE], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
+            gameManager.UpdateScore(10);
+
+        }
         if (isRed && collision.gameObject.CompareTag("Red Crate"))
         {
             playerRb.AddForce(Vector3.forward , ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
-            Instantiate(redExplosion, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
+            Instantiate(explosions[RED], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(20);
 
 
         }
-        if (collision.gameObject.CompareTag("Blue Crate"))
+        if(isYellow && collision.gameObject.CompareTag("Yellow Crate"))
         {
-            playerRb.AddForce(Vector3.forward , ForceMode.Impulse);
+            playerRb.AddForce(Vector3.forward, ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
-            Instantiate(blueExplosion, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
-            gameManager.UpdateScore(10);
-
+            Instantiate(explosions[YELLOW], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
+            gameManager.UpdateScore(30);
         }
     }
-
-    IEnumerator DetectGameOver()
+    IEnumerator ChangeColor()
     {
-        yield return new WaitForSeconds(10);
-        playerRb.velocity = Vector3.zero;
-        playerRb.angularVelocity = Vector3.zero;
-        gameManager.EndGame();
+        while (onCheckpoint)
+        {
+            GetComponent<Renderer>().material = playerMaterial[BLUE];
+            isRed = false;
+            isYellow = false;
+            yield return new WaitForSeconds(0.5f);
+            GetComponent<Renderer>().material = playerMaterial[RED];
+            isRed = true;
+            yield return new WaitForSeconds(0.5f);
+            GetComponent<Renderer>().material = playerMaterial[YELLOW];
+            isRed = false;
+            isYellow = true;
+            yield return new WaitForSeconds(0.5f);
+
+
+        }
+
     }
+
 
 
 }

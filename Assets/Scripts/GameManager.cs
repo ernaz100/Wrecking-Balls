@@ -34,8 +34,8 @@ public class GameManager : MonoBehaviour
         scoreText.text = "Score: " + score;
         isRunning = true;
         titleScreen.SetActive(false);
-        spawnManager.SpawnBoostingPads();
-        spawnManager.SpawnCrateWave();
+        spawnManager.SpawnBoostingPadsAndRandomCrates();
+        spawnManager.SpawnCrateLine();
         spawnManager.SpawnCheckpoint();
         spawnManager.SpawnEnvironment();
     }

@@ -10,6 +10,8 @@ TagManager:
   - Red Crate
   - Checkpoint
   - Env
+  - Yellow Crate
+  - Yellow Boost
   layers:
   - Default
   - TransparentFX

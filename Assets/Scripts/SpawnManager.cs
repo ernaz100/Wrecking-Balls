@@ -4,89 +4,32 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    private float crateWave_position = 44;
-    private float boosterWave_position = 11;
-    private float checkpoint_Position = -8;
-    private float environment_Position = 139f;
+    private float crateLine_position = 224;
+    private float boost_crate_way_position = 11;
+    private float checkpoint_Position = -7;
+    private float environment_Position = 290f;
 
-    public int ENVIRONMENT_INTERVAL = 120;
-    public const float BOOST_CHECKPOINT_CRATE_INTERVAL = 60f;
+    public const float ENVIRONMENT_INTERVAL = 240f;
+    public const float BOOST_CHECKPOINT_CRATE_INTERVAL = 250f;
     private const float CRATE_LEFT_BORDER = -6.5f;
     public GameObject[] cratePrefabs;
     public GameObject[] boosterPrefabs;
     public GameObject checkpoint;
     public GameObject environment;
+    private int randomPrefab;
 
-    private bool onStartUp = true;
-
-    private int randomCratePrefab;
-
-    void Start()
+    public void SpawnCrateLine()
     {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SpawnCrateWave()
-    {
-        if (onStartUp)
+       
+        for (int j = 0; j < 18; j += 2)
         {
-            for (int c = 0; c < 5; c++)
-            {
-                for (int i = 0; i < 5; i += 2)
-                {
-                    for (int j = 0; j < 18; j += 2)
-                    {
-                        randomCratePrefab = Random.Range(0, 2);
-                        Instantiate(cratePrefabs[randomCratePrefab], new Vector3(CRATE_LEFT_BORDER + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
-                    }
-                }
-                crateWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
-            }
+            randomPrefab = Random.Range(0, 3);
+            Instantiate(cratePrefabs[randomPrefab], new Vector3(CRATE_LEFT_BORDER + j, 0f, crateLine_position), cratePrefabs[randomPrefab].transform.rotation);
         }
-        else
-        {
-            for (int i = 0; i < 5; i +=2)
-            {
-                for (int j = 0; j < 18; j += 2)
-                {
-                    randomCratePrefab = Random.Range(0, 2);
-                    Instantiate(cratePrefabs[randomCratePrefab], new Vector3(CRATE_LEFT_BORDER + j, 0f, crateWave_position + i), cratePrefabs[randomCratePrefab].transform.rotation);
-                }
-            }
-            crateWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
-        }
+        crateLine_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
+       
     }
-
-    public void SpawnBoostingPads()
-    {
-        if (onStartUp)
-        {
-            for (int c = 0; c < 5; c++)
-            {
-                float randomAmount = Random.Range(1, 10);
-                for (int i = 0; i < randomAmount; i++)
-                {
-                    Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
-                }
-                boosterWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
-            }
-        }
-        else
-        {
-            float randomAmount = Random.Range(1, 5);
-            for (int i = 0; i < randomAmount; i++)
-            {
-                Instantiate(boosterPrefabs[0], GenerateRandomBoosterPosition(boosterWave_position), boosterPrefabs[0].transform.rotation);
-            }
-            boosterWave_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
-
-        }
-    }
+   
     public void SpawnCheckpoint()
     {
             Instantiate(checkpoint, new Vector3(1.25f, -0.485198f, checkpoint_Position), checkpoint.transform.rotation);
@@ -94,30 +37,38 @@ public class SpawnManager : MonoBehaviour
     }
     public void SpawnEnvironment()
     {
-        if (onStartUp)
+       
+        Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
+        environment_Position += ENVIRONMENT_INTERVAL;
+       
+    }
+    public void SpawnBoostingPadsAndRandomCrates()
+    {
+        float randomAmount = Random.Range(1, 5);
+        for (int j = 0; j < randomAmount; j += 2)
         {
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
-            environment_Position += ENVIRONMENT_INTERVAL;
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
-            environment_Position += ENVIRONMENT_INTERVAL;
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
-            environment_Position += ENVIRONMENT_INTERVAL;
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
-            environment_Position += ENVIRONMENT_INTERVAL;
-            onStartUp = false;
+            randomPrefab = Random.Range(0, 3);
+            Instantiate(cratePrefabs[randomPrefab], GenerateRandomCratePosition(boost_crate_way_position), cratePrefabs[randomPrefab].transform.rotation);
         }
-        else
+        randomAmount = Random.Range(1, 5);
+        for (int i = 0; i < randomAmount; i++)
         {
-            Instantiate(environment, new Vector3(-1.282727f, 4.714375f, environment_Position), environment.transform.rotation);
-            environment_Position += ENVIRONMENT_INTERVAL;
+            randomPrefab = Random.Range(0, 2);
+            Instantiate(boosterPrefabs[randomPrefab], GenerateRandomBoosterPosition(boost_crate_way_position), boosterPrefabs[randomPrefab].transform.rotation);
         }
-
+        boost_crate_way_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
     }
 
     private Vector3 GenerateRandomBoosterPosition(float pos)
     {
         float randomX = Random.Range(-7f, 10f);
-        float randomZ = Random.Range(pos-16, pos+14);
+        float randomZ = Random.Range(pos, pos+150);
         return new Vector3(randomX, -0.485f, randomZ);
+    }
+    private Vector3 GenerateRandomCratePosition(float pos)
+    {
+        float randomX = Random.Range(-6.5f, 9.5f);
+        float randomZ = Random.Range(pos, pos + 150);
+        return new Vector3(randomX, 0, randomZ);
     }
 }
