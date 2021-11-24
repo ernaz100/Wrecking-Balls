@@ -30,23 +30,16 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameOver)
-        {
-            gameManager.EndGame();
-        }
-        else
-        {
-
             MoveSideways();
 
-            if (Input.GetKeyDown(KeyCode.Space) && onCheckpoint)
+            if (Input.GetKeyDown(KeyCode.Space) && onCheckpoint && !gameOver)
             {
                 playerRb.AddForce(Vector3.forward * forwardSpeed , ForceMode.Impulse); 
                 onCheckpoint = false;
                 gameOverCountDown = StartCoroutine(DetectGameOver());
 
             }
-         }
+         
     }
 
     private void MoveSideways()
@@ -115,7 +108,9 @@ public class PlayerController : MonoBehaviour
     IEnumerator DetectGameOver()
     {
         yield return new WaitForSeconds(10);
-        gameOver = true;
+        playerRb.velocity = Vector3.zero;
+        playerRb.angularVelocity = Vector3.zero;
+        gameManager.EndGame();
     }
 
 
