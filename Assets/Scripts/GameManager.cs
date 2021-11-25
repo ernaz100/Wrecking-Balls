@@ -12,9 +12,11 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI[] moneyText;
     public GameObject titleScreen;
     public GameObject endScreen;
+    public PlayerController playerController;
     public SpawnManager spawnManager;
     private int score;
     private int coins;
+    private float seconds;
     public static bool isRunning = false;
 
     void Start()
@@ -25,6 +27,15 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isRunning && !playerController.onCheckpoint)
+        {
+            seconds += Time.deltaTime;
+            if (seconds > 0.5f)
+            {
+                UpdateScore(1);
+                seconds = 0;
+            }
+        }
         
     }
 
