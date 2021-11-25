@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b1b9cd48b1a2c43b93b37300540946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpoint_Position: -7
   cratePrefabs:
   - {fileID: 134104, guid: 71782582b9d2cac4cba5251a3b767d13, type: 3}
   - {fileID: 4874111400816994952, guid: 15c5a9a03735e9f45aef3d04bd4c3292, type: 3}
@@ -2208,6 +2209,14 @@ PrefabInstance:
     - target: {fileID: 6432436444497974962, guid: a7a86dc1fd0109649b982838f9e45a8c, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6432436444497974963, guid: a7a86dc1fd0109649b982838f9e45a8c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6432436444497974963, guid: a7a86dc1fd0109649b982838f9e45a8c, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6432436444497974972, guid: a7a86dc1fd0109649b982838f9e45a8c, type: 3}
       propertyPath: m_Constraints

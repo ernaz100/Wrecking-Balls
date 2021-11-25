@@ -9,16 +9,20 @@ public class PlayerController : MonoBehaviour
     public float forwardSpeed = 50f;
     public float sideSpeed = 20f;
     public float boostingSpeed = 50f;
+    public Vector3 velocity;
+
 
     public Material[] playerMaterial;
     public ParticleSystem[] explosions;
 
     private bool onCheckpoint = true;
-    private bool isRed = false;
-    private bool isYellow = false;
+    [HideInInspector]
+    public bool isRed = false;
+    [HideInInspector]
+    public bool isYellow = false;
 
     IEnumerator changeColor;
-    private Rigidbody playerRb;
+    public Rigidbody playerRb;
     private GameManager gameManager;
     private SpawnManager spawnManager;
 
@@ -34,7 +38,17 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
             MoveSideways();
-
+        Debug.Log(spawnManager.checkpoint_Position);
+        velocity = playerRb.GetPointVelocity(transform.position);
+            if(transform.position.z >= spawnManager.checkpoint_Position-240 - 2.5f && transform.position.z <= spawnManager.checkpoint_Position-240 + 2.5f)
+            {
+                 onCheckpoint = true;
+            }
+            else
+            {
+                 onCheckpoint = false;
+            }
+        
             if (onCheckpoint && GameManager.isRunning)
             {
                 transform.Translate(new Vector3(0,0,1) * Time.deltaTime,Space.World);
@@ -73,6 +87,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Checkpoint"))
         {
             onCheckpoint = true;
+            transform.position = new Vector3(transform.position.x, transform.position.y, spawnManager.checkpoint_Position - 242.5f);
             StartCoroutine(changeColor);
             transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
             transform.localScale = new Vector3(1, 1, 1);
@@ -80,18 +95,6 @@ public class PlayerController : MonoBehaviour
             playerRb.angularVelocity = Vector3.zero;
 
         }
-        if (other.CompareTag("Boost"))
-        {
-            playerRb.AddForce(Vector3.forward * boostingSpeed, ForceMode.Impulse);
-            GetComponent<Renderer>().material = playerMaterial[RED];
-        }
-        else if(other.CompareTag("Yellow Boost"))
-        {
-            playerRb.AddForce(Vector3.forward * boostingSpeed, ForceMode.Impulse);
-            GetComponent<Renderer>().material = playerMaterial[YELLOW];
-        }
-        
-
     }   
     private void OnTriggerExit(Collider other)
     {
@@ -108,18 +111,18 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Blue Crate"))
+        if (!isRed && !isYellow && collision.gameObject.CompareTag("Blue Crate"))
         {
-            playerRb.AddForce(Vector3.forward, ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
+            playerRb.velocity = velocity;
             Instantiate(explosions[BLUE], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(10);
 
         }
         if (isRed && collision.gameObject.CompareTag("Red Crate"))
         {
-            playerRb.AddForce(Vector3.forward , ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
+            playerRb.velocity = velocity;
             Instantiate(explosions[RED], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(20);
 
@@ -127,8 +130,8 @@ public class PlayerController : MonoBehaviour
         }
         if(isYellow && collision.gameObject.CompareTag("Yellow Crate"))
         {
-            playerRb.AddForce(Vector3.forward, ForceMode.Impulse);
             Destroy(collision.gameObject.gameObject);
+            playerRb.velocity = velocity;
             Instantiate(explosions[YELLOW], collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             gameManager.UpdateScore(30);
         }

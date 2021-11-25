@@ -6,11 +6,11 @@ public class SpawnManager : MonoBehaviour
 {
     private float crateLine_position = 224;
     private float boost_crate_way_position = 11;
-    private float checkpoint_Position = -7;
+    public float checkpoint_Position = -7;
     private float environment_Position = 290f;
 
     public const float ENVIRONMENT_INTERVAL = 240f;
-    public const float BOOST_CHECKPOINT_CRATE_INTERVAL = 250f;
+    public const float BOOST_CHECKPOINT_CRATE_INTERVAL = 240f;
     private const float CRATE_LEFT_BORDER = -6.5f;
     public GameObject[] cratePrefabs;
     public GameObject[] boosterPrefabs;
@@ -44,30 +44,30 @@ public class SpawnManager : MonoBehaviour
     }
     public void SpawnBoostingPadsAndRandomCrates()
     {
-        float randomAmount = Random.Range(1, 5);
-        for (int j = 0; j < randomAmount; j += 2)
+        float randomAmount = Random.Range(10, 15);
+        for (int j = 0; j < randomAmount; j++)
         {
             randomPrefab = Random.Range(0, 3);
             Instantiate(cratePrefabs[randomPrefab], GenerateRandomCratePosition(boost_crate_way_position), cratePrefabs[randomPrefab].transform.rotation);
         }
-        randomAmount = Random.Range(1, 5);
+       /* randomAmount = Random.Range(1, 5);
         for (int i = 0; i < randomAmount; i++)
         {
             randomPrefab = Random.Range(0, 2);
             Instantiate(boosterPrefabs[randomPrefab], GenerateRandomBoosterPosition(boost_crate_way_position), boosterPrefabs[randomPrefab].transform.rotation);
-        }
+        } */
         boost_crate_way_position += BOOST_CHECKPOINT_CRATE_INTERVAL;
     }
 
     private Vector3 GenerateRandomBoosterPosition(float pos)
     {
-        float randomX = Random.Range(-7f, 10f);
+        float randomX = Random.Range(-7f, 7);
         float randomZ = Random.Range(pos, pos+150);
         return new Vector3(randomX, -0.485f, randomZ);
     }
     private Vector3 GenerateRandomCratePosition(float pos)
     {
-        float randomX = Random.Range(-6.5f, 9.5f);
+        float randomX = Random.Range(-7f,7f);
         float randomZ = Random.Range(pos, pos + 150);
         return new Vector3(randomX, 0, randomZ);
     }
