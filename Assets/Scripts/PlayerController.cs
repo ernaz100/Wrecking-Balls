@@ -174,7 +174,7 @@ public class PlayerController : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSeconds(20);
             SHRINKING_DELAY--;
 
         }
