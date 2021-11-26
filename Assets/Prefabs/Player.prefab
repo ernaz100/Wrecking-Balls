@@ -98,8 +98,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Constraints: 4
+  m_CollisionDetection: 2
 --- !u!135 &6432436444497974963
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -125,7 +125,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5107bc45c2c49d49b47e36b5bc773e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardSpeed: 7
+  forwardSpeed: 40
   sideSpeed: 15
   boostingSpeed: 5
-  strongerMaterial: {fileID: 2100000, guid: b33eb18b14f8bde419376e7e5f151c21, type: 2}
+  velocity: {x: 0, y: 0, z: 0}
+  playerMaterial:
+  - {fileID: 2100000, guid: 483f04c82d4192845bed5bb7a4127bc0, type: 2}
+  - {fileID: 2100000, guid: b33eb18b14f8bde419376e7e5f151c21, type: 2}
+  - {fileID: 2100000, guid: c6053b6ec2740234a80a0c9f540cc749, type: 2}
+  explosions:
+  - {fileID: 15085447402717889, guid: 743ce290c74ae49c19aa3f128322fc7e, type: 3}
+  - {fileID: 2088871590894813759, guid: 745208c9d6e104225bd99e1ab894e3bb, type: 3}
+  - {fileID: 3199346384015752365, guid: 307229a5540374aae98859caad2128a3, type: 3}
+  onCheckpoint: 1
+  isRed: 0
+  isYellow: 0
+  playerRb: {fileID: 0}

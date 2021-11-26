@@ -20,8 +20,6 @@ public class PlayerController : MonoBehaviour
     public bool isRed = false;
     [HideInInspector]
     public bool isYellow = false;
-
-    IEnumerator changeColor;
     public Rigidbody playerRb;
     private GameManager gameManager;
     private SpawnManager spawnManager;
@@ -31,10 +29,9 @@ public class PlayerController : MonoBehaviour
         playerRb = GetComponent<Rigidbody>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        changeColor = ChangeColor();
+        StartCoroutine(ShrinkFasterOverTime());
     }
 
-    // Update is called once per frame
     void Update()
     {
         MoveSideways();
@@ -59,7 +56,7 @@ public class PlayerController : MonoBehaviour
             //Shoot away from Checkpoint on Space down
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                StopCoroutine(changeColor);
+                StopCoroutine("ChangeColor");
                 playerRb.AddForce(Vector3.forward * 50, ForceMode.Impulse);
             }  
         }
@@ -95,8 +92,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Checkpoint"))
         {
             onCheckpoint = true;
-            StartCoroutine(changeColor);
-            StartCoroutine(ShrinkFasterOverTime());
+            StartCoroutine("ChangeColor");
             transform.position = new Vector3(transform.position.x, transform.localScale.y / 2, spawnManager.checkpoint_Position - 240 - 2.5f);
             playerRb.velocity = Vector3.zero;
             playerRb.angularVelocity = Vector3.zero;
@@ -107,7 +103,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Checkpoint"))
         {
-            StopCoroutine(changeColor);
+            StopCoroutine("ChangeColor");
             spawnManager.SpawnCrateLine();
             spawnManager.SpawnBoostingPadsAndRandomCrates();
             spawnManager.SpawnEnvironment();
@@ -164,8 +160,6 @@ public class PlayerController : MonoBehaviour
             isRed = false;
             isYellow = true;
             yield return new WaitForSeconds(0.5f);
-
-
         }
 
     }
@@ -174,7 +168,7 @@ public class PlayerController : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(20);
+            yield return new WaitForSeconds(90);
             SHRINKING_DELAY--;
 
         }
